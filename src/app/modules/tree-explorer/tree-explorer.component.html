@@ -1,0 +1,86 @@
+<div class="container-fluid">
+  <div class="row g-4">
+    <!-- Left Panel: Interactive File Tree -->
+    <div class="col-lg-4">
+      <div class="ide-card h-100">
+        <div class="ide-header">
+          <span class="fw-bold"><i class="bi bi-folder-symlink me-2"></i>EXPLORATEUR DE PROJET CLI</span>
+          <span class="badge bg-danger">Angular v21/v22</span>
+        </div>
+        <div class="ide-body p-2 font-monospace">
+          <div class="tree-container">
+            <ng-container *ngTemplateOutlet="treeNode; context: { $implicit: fileTree }"></ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Role Inspector & Syntax Highlighted Content -->
+    <div class="col-lg-8">
+      <div class="ide-card h-100">
+        <div class="ide-header">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi {{ selectedFile().icon }} fs-5"></i>
+            <div>
+              <span class="fw-bold">{{ selectedFile().name }}</span>
+              <small class="text-secondary d-block font-monospace">{{ selectedFile().path }}</small>
+            </div>
+          </div>
+          <span class="badge bg-secondary">INSPECTEUR DE RÔLE</span>
+        </div>
+
+        <div class="ide-body">
+          <!-- Role Summary Card -->
+          <div class="role-card p-3 rounded mb-4 border">
+            <h4 class="fs-5 fw-bold text-danger mb-2">
+              <i class="bi bi-info-circle-fill me-2"></i>{{ selectedFile().role }}
+            </h4>
+            <p class="text-secondary mb-3 fs-6">{{ selectedFile().explanation }}</p>
+
+            <div class="key-points">
+              <span class="fw-bold small text-uppercase text-muted mb-2 d-block">Points Clés à Retenir :</span>
+              <div class="d-flex flex-wrap gap-2">
+                @for (point of selectedFile().keyPoints; track point) {
+                  <span class="badge bg-dark border border-secondary text-primary p-2">
+                    <i class="bi bi-check-lg text-success me-1"></i>{{ point }}
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Code Preview Box -->
+          <div class="code-box">
+            <div class="code-box-header px-3 py-2 bg-dark rounded-top border border-bottom-0 d-flex justify-content-between align-items-center">
+              <span class="small font-monospace text-secondary">Contenu type de {{ selectedFile().name }}</span>
+              <span class="code-badge">STRICT TS/HTML</span>
+            </div>
+            <pre class="code-content font-monospace p-3 rounded-bottom border m-0"><code>{{ selectedFile().codeContent }}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recursive Tree Node Template -->
+<ng-template #treeNode let-items>
+  <ul class="tree-list list-unstyled ps-3 m-0">
+    @for (item of items; track item.id) {
+      <li class="tree-item py-1">
+        <div
+          class="tree-node-row d-flex align-items-center gap-2 px-2 py-1 rounded"
+          [class.selected]="selectedFile().id === item.id"
+          [class.folder]="item.isFolder"
+          (click)="selectFile(item)">
+          <i class="bi {{ item.icon }}"></i>
+          <span class="node-name small" [class.fw-bold]="item.isFolder">{{ item.name }}</span>
+        </div>
+
+        @if (item.isFolder && item.children) {
+          <ng-container *ngTemplateOutlet="treeNode; context: { $implicit: item.children }"></ng-container>
+        }
+      </li>
+    }
+  </ul>
+</ng-template>

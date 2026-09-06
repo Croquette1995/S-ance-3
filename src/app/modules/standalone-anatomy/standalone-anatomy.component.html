@@ -1,0 +1,130 @@
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="ide-card p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+          <h3 class="fs-5 fw-bold m-0 text-gradient">
+            <i class="bi bi-box-seam me-2"></i>Anatomie d'un Composant Standalone Angular
+          </h3>
+          <p class="text-secondary small m-0">
+            Survolez les parties du code TypeScript ci-dessous pour déclencher le <strong>Mode Rayons X</strong> et voir leur impact direct dans le DOM HTML et CSS.
+          </p>
+        </div>
+        <span class="badge bg-danger p-2"><i class="bi bi-broadcast me-1"></i>MODE RAYONS X ACTIF</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left Column: Code Deconstructor -->
+    <div class="col-lg-6">
+      <div class="ide-card h-100">
+        <div class="ide-header">
+          <span class="fw-bold font-monospace"><i class="bi bi-filetype-ts me-2 text-info"></i>app.component.ts</span>
+          <span class="badge bg-secondary">Survolez une zone</span>
+        </div>
+        <div class="ide-body font-monospace p-3 code-deconstructor-box">
+          <div class="text-secondary mb-2">// Importations des dépendances</div>
+          <div class="code-line">import &#123; Component &#125; from '@angular/core';</div>
+          <div class="code-line mb-3">import &#123; RouterOutlet &#125; from '@angular/router';</div>
+
+          <div class="text-secondary mb-1">// Décorateur @Component et ses Métadonnées</div>
+          <div class="code-line">@Component(&#123;</div>
+
+          <div
+            class="code-interactive-block ms-3 p-1 rounded my-1"
+            [class.active]="hoveredZone()?.id === 'selector'"
+            (mouseenter)="setHover(zones[0])"
+            (mouseleave)="setHover(null)">
+            <span class="text-warning">selector:</span> <span class="text-success">'app-root'</span>,
+          </div>
+
+          <div
+            class="code-interactive-block ms-3 p-1 rounded my-1"
+            [class.active]="hoveredZone()?.id === 'standalone'"
+            (mouseenter)="setHover(zones[1])"
+            (mouseleave)="setHover(null)">
+            <span class="text-warning">standalone:</span> <span class="text-info">true</span>,
+          </div>
+
+          <div
+            class="code-interactive-block ms-3 p-1 rounded my-1"
+            [class.active]="hoveredZone()?.id === 'imports'"
+            (mouseenter)="setHover(zones[2])"
+            (mouseleave)="setHover(null)">
+            <span class="text-warning">imports:</span> [RouterOutlet],
+          </div>
+
+          <div
+            class="code-interactive-block ms-3 p-1 rounded my-1"
+            [class.active]="hoveredZone()?.id === 'templateUrl'"
+            (mouseenter)="setHover(zones[3])"
+            (mouseleave)="setHover(null)">
+            <span class="text-warning">templateUrl:</span> <span class="text-success">'./app.component.html'</span>,
+          </div>
+
+          <div
+            class="code-interactive-block ms-3 p-1 rounded my-1"
+            [class.active]="hoveredZone()?.id === 'styleUrl'"
+            (mouseenter)="setHover(zones[4])"
+            (mouseleave)="setHover(null)">
+            <span class="text-warning">styleUrl:</span> <span class="text-success">'./app.component.css'</span>
+          </div>
+
+          <div class="code-line mb-3">&#125;)</div>
+
+          <div class="text-secondary mb-1">// Logique TypeScript et État</div>
+          <div
+            class="code-interactive-block p-2 rounded"
+            [class.active]="hoveredZone()?.id === 'class'"
+            (mouseenter)="setHover(zones[5])"
+            (mouseleave)="setHover(null)">
+            <div><span class="text-danger fw-bold">export class</span> AppComponent &#123;</div>
+            <div class="ms-3 text-primary">courseName = 'Programmation Objet';</div>
+            <div class="ms-3 text-info">isOnline = true;</div>
+            <div>&#125;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: X-Ray Impact Inspector -->
+    <div class="col-lg-6">
+      <div class="ide-card h-100">
+        <div class="ide-header">
+          <span class="fw-bold"><i class="bi bi-eye me-2"></i>INSPECTEUR RAYONS X (IMPACT DIRECT)</span>
+          @if (hoveredZone()) {
+            <span class="badge bg-danger">{{ hoveredZone()?.targetRole }}</span>
+          } @else {
+            <span class="badge bg-secondary">EN ATTENTE SURVOL</span>
+          }
+        </div>
+        <div class="ide-body">
+          @if (!hoveredZone()) {
+            <div class="xray-placeholder text-center p-5 rounded border border-dashed">
+              <i class="bi bi-hand-index-thumb fs-1 text-secondary d-block mb-3"></i>
+              <h4 class="fs-6 text-secondary fw-semibold">Passez votre curseur sur une propriété du code à gauche...</h4>
+              <p class="small text-muted mb-0">Découvrez instantanément son rôle technique et son impact dans le HTML / CSS.</p>
+            </div>
+          } @else {
+            <div class="xray-panel p-4 rounded border">
+              <h4 class="fs-5 fw-bold text-gradient mb-2">{{ hoveredZone()?.name }}</h4>
+              <p class="fs-6 text-secondary mb-4">{{ hoveredZone()?.description }}</p>
+
+              <div class="mb-3">
+                <span class="fw-bold small text-uppercase text-muted d-block mb-1">Impact dans le Template HTML :</span>
+                <pre class="impact-box font-monospace p-3 rounded border text-warning"><code>{{ hoveredZone()?.impactHtml }}</code></pre>
+              </div>
+
+              <div>
+                <span class="fw-bold small text-uppercase text-muted d-block mb-1">Impact dans les Styles CSS :</span>
+                <pre class="impact-box font-monospace p-3 rounded border text-info"><code>{{ hoveredZone()?.impactCss }}</code></pre>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,89 @@
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="ide-card p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+          <h3 class="fs-5 fw-bold m-0 text-gradient">
+            <i class="bi bi-terminal me-2"></i>Console Virtuelle du CLI Angular
+          </h3>
+          <p class="text-secondary small m-0">
+            Simulez l'exécution des commandes fondamentales du CLI Angular (<code>ng serve</code>, <code>ng generate</code>, <code>ng build</code>).
+          </p>
+        </div>
+        <button class="btn btn-outline-secondary btn-sm" (click)="executeCommand('clear')">
+          <i class="bi bi-trash me-1"></i>Effacer la Console
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Command Action Bar -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="d-flex gap-2 flex-wrap align-items-center">
+        <span class="small fw-bold text-secondary me-2">Actions Rapides :</span>
+        @for (qc of quickCommands; track qc.cmd) {
+          <button class="btn btn-sm btn-dark border-secondary text-primary" (click)="executeCommand(qc.cmd)">
+            <i class="bi bi-play-fill text-success me-1"></i>{{ qc.label }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Terminal Console -->
+  <div class="row">
+    <div class="col-12">
+      <div class="ide-card font-monospace">
+        <div class="ide-header bg-dark">
+          <div class="d-flex align-items-center gap-2">
+            <span class="dot bg-danger"></span>
+            <span class="dot bg-warning"></span>
+            <span class="dot bg-success"></span>
+            <span class="ms-2 text-secondary small fw-bold">bash - angular-cli-simulated-terminal</span>
+          </div>
+          <span class="badge bg-secondary">PORT 4200 SIMULÉ</span>
+        </div>
+
+        <div class="ide-body terminal-body p-3">
+          <!-- Command History Log -->
+          @for (item of history(); track item.id) {
+            <div class="cmd-block mb-3">
+              <div class="d-flex align-items-center gap-2 text-danger fw-bold mb-1">
+                <span class="text-secondary">[{{ item.timestamp }}]</span>
+                <span class="text-success">student@angular-studio:~$</span>
+                <span class="text-light">{{ item.command }}</span>
+              </div>
+
+              <div class="cmd-output ps-3 border-start border-secondary">
+                @for (line of item.lines; track $index) {
+                  <div
+                    class="output-line small py-1"
+                    [class.text-success]="item.type === 'success'"
+                    [class.text-info]="item.type === 'info'"
+                    [class.text-warning]="item.type === 'file'"
+                    [class.text-danger]="item.type === 'error'">
+                    {{ line }}
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Live Command Prompt Input -->
+          <div class="d-flex align-items-center gap-2 mt-3 pt-2 border-top border-dark">
+            <span class="text-success fw-bold">student@angular-studio:~$</span>
+            <input
+              type="text"
+              class="form-control form-control-sm bg-transparent border-0 text-light font-monospace shadow-none p-0"
+              placeholder="Tapez 'ng serve', 'ng generate component header', 'ng build'..."
+              [ngModel]="userInput()"
+              (ngModelChange)="userInput.set($event)"
+              (keyup.enter)="executeCommand()">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

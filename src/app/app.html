@@ -1,0 +1,114 @@
+<div class="app-layout" [class.collapsed]="state.isSidebarCollapsed()">
+  <!-- Top Navigation Header -->
+  <header class="top-header">
+    <div class="d-flex align-items-center gap-3">
+      <button class="btn-icon" (click)="state.toggleSidebar()" title="Basculer la barre latérale">
+        <i class="bi bi-list fs-4"></i>
+      </button>
+      <div class="app-brand d-flex align-items-center gap-2">
+        <div class="angular-logo-container">
+          <i class="bi bi-shield-fill-x fs-3 text-danger"></i>
+        </div>
+        <div>
+          <h1 class="m-0 fs-5 fw-bold text-gradient">Angular Studio — Séance 3</h1>
+          <span class="sub-title">Architecture SPA, CLI & Composants Standalone</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+      <div class="progress-badge d-none d-md-flex align-items-center gap-2 px-3 py-1 rounded-pill">
+        <i class="bi bi-trophy text-warning"></i>
+        <small class="fw-semibold">
+          Ateliers : {{ state.completedWorkshops().size }} / 4 résolus
+        </small>
+      </div>
+
+      <button class="btn-theme" (click)="state.toggleTheme()" title="Changer de thème">
+        <i class="bi" [class.bi-moon-stars-fill]="state.theme() === 'dark'" [class.bi-sun-fill]="state.theme() === 'light'"></i>
+        <span class="d-none d-sm-inline ms-1">{{ state.theme() === 'dark' ? 'Sombre' : 'Clair' }}</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="section-title">MODULES DE COURS</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        @for (item of state.modules; track item.id) {
+          <button
+            class="nav-item-btn"
+            [class.active]="state.activeModuleId() === item.id"
+            (click)="state.setActiveModule(item.id)">
+            <i class="bi {{ item.icon }} nav-icon"></i>
+            <div class="nav-text">
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="nav-title">{{ item.title }}</span>
+                @if (item.badge) {
+                  <span class="badge nav-badge">{{ item.badge }}</span>
+                }
+              </div>
+              <small class="nav-desc">{{ item.description }}</small>
+            </div>
+          </button>
+        }
+      </nav>
+
+      <div class="sidebar-footer p-3">
+        <div class="info-box p-2 rounded">
+          <i class="bi bi-mortarboard-fill me-2 text-danger"></i>
+          <small class="text-secondary">SUPPORT PÉDAGOGIQUE V21/V22</small>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <header class="module-header mb-4 p-3 rounded-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="module-icon-box">
+            <i class="bi {{ state.activeModule().icon }} fs-2 text-danger"></i>
+          </div>
+          <div>
+            <h2 class="m-0 fs-4 fw-bold">{{ state.activeModule().title }}</h2>
+            <p class="m-0 text-secondary">{{ state.activeModule().description }}</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dynamic Views Container -->
+      <div class="module-content">
+        @switch (state.activeModuleId()) {
+          @case ('mpa-vs-spa') {
+            <app-mpa-vs-spa />
+          }
+          @case ('tree-explorer') {
+            <app-tree-explorer />
+          }
+          @case ('bootstrap-flow') {
+            <app-bootstrap-flow />
+          }
+          @case ('standalone-anatomy') {
+            <app-standalone-anatomy />
+          }
+          @case ('data-bindings') {
+            <app-data-bindings />
+          }
+          @case ('css-encapsulation') {
+            <app-css-encapsulation />
+          }
+          @case ('cli-terminal') {
+            <app-cli-terminal />
+          }
+          @case ('lab-workshops') {
+            <app-lab-workshops />
+          }
+        }
+      </div>
+    </main>
+  </div>
+</div>
