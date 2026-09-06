@@ -1,0 +1,193 @@
+<div class="container-fluid">
+  <!-- Mode Switcher Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="ide-card p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+          <h3 class="fs-5 fw-bold m-0 text-gradient">
+            <i class="bi bi-diagram-3 me-2"></i>Simulateur d'Architecture Web
+          </h3>
+          <p class="text-secondary small m-0">
+            Observez les différences fondamentales entre une application Multi-Page (MPA) et Monopage (SPA).
+          </p>
+        </div>
+
+        <div class="btn-group" role="group">
+          <button
+            type="button"
+            class="btn"
+            [class.btn-danger]="mode() === 'MPA'"
+            [class.btn-outline-danger]="mode() !== 'MPA'"
+            (click)="setMode('MPA')">
+            <i class="bi bi-file-earmark-arrow-up me-1"></i>Mode MPA (Traditionnel)
+          </button>
+          <button
+            type="button"
+            class="btn"
+            [class.btn-danger]="mode() === 'SPA'"
+            [class.btn-outline-danger]="mode() !== 'SPA'"
+            (click)="setMode('SPA')">
+            <i class="bi bi-lightning-charge-fill me-1"></i>Mode SPA (Angular Moderne)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Visual Browser Simulation Console -->
+    <div class="col-lg-7">
+      <div class="ide-card h-100">
+        <div class="ide-header">
+          <div class="d-flex align-items-center gap-2">
+            <span class="dot bg-danger"></span>
+            <span class="dot bg-warning"></span>
+            <span class="dot bg-success"></span>
+            <span class="ms-2 fw-semibold text-secondary small">Navigateur Simulateur Client</span>
+          </div>
+          <span class="badge" [class.bg-danger]="mode() === 'MPA'" [class.bg-primary]="mode() === 'SPA'">
+            {{ mode() }}
+          </span>
+        </div>
+
+        <div class="ide-body position-relative" [class.flash-reload]="flashEffect()">
+          <!-- Address Bar & Nav Buttons -->
+          <div class="address-bar p-2 mb-3 rounded d-flex align-items-center gap-2">
+            <span class="status-indicator" [class.online]="!isLoading()" [class.loading]="isLoading()"></span>
+            <i class="bi bi-globe text-secondary"></i>
+            <span class="url-text font-monospace small flex-grow-1">
+              http://localhost:4200/{{ currentPage() }}
+            </span>
+            @if (isLoading()) {
+              <div class="spinner-border spinner-border-sm text-danger" role="status"></div>
+            }
+          </div>
+
+          <!-- Navigation Links inside Simulator -->
+          <div class="d-flex gap-2 mb-4">
+            <button
+              class="btn btn-sm"
+              [class.btn-secondary]="currentPage() === 'accueil'"
+              [class.btn-outline-secondary]="currentPage() !== 'accueil'"
+              [disabled]="isLoading()"
+              (click)="navigate('accueil')">
+              <i class="bi bi-house me-1"></i>Accueil
+            </button>
+            <button
+              class="btn btn-sm"
+              [class.btn-secondary]="currentPage() === 'cours'"
+              [class.btn-outline-secondary]="currentPage() !== 'cours'"
+              [disabled]="isLoading()"
+              (click)="navigate('cours')">
+              <i class="bi bi-book me-1"></i>Liste des Cours
+            </button>
+            <button
+              class="btn btn-sm"
+              [class.btn-secondary]="currentPage() === 'profil'"
+              [class.btn-outline-secondary]="currentPage() !== 'profil'"
+              [disabled]="isLoading()"
+              (click)="navigate('profil')">
+              <i class="bi bi-person me-1"></i>Espace Étudiant
+            </button>
+          </div>
+
+          <!-- Simulated Page Rendering Viewport -->
+          <div class="viewport-box p-4 rounded border mb-4">
+            <h4 class="fw-bold mb-3 text-danger">{{ pageContent().title }}</h4>
+            <ul class="list-group list-group-flush mb-3">
+              @for (item of pageContent().data.items; track item) {
+                <li class="list-group-item bg-transparent text-primary border-secondary">
+                  <i class="bi bi-check2-circle me-2 text-success"></i>{{ item }}
+                </li>
+              }
+            </ul>
+            <div class="alert alert-info py-2 small mb-0">
+              <i class="bi bi-info-circle me-2"></i>
+              @if (mode() === 'MPA') {
+                En MPA, chaque clic réinitialise le state de la page et demande un fichier HTML complet au serveur.
+              } @else {
+                En SPA (Angular), seule la donnée JSON est récupérée et le DOM est patché localement !
+              }
+            </div>
+          </div>
+
+          <!-- Live Network Log Console -->
+          <div class="network-console">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-secondary small fw-bold">
+                <i class="bi bi-activity me-1"></i>CONSOLE RESEAU EN DIRECT (HTTP & DOM)
+              </span>
+              <button class="btn btn-link btn-sm text-secondary p-0" (click)="logs.set([])">
+                Effacer
+              </button>
+            </div>
+            <div class="console-box font-monospace p-3 rounded" style="max-height: 200px; overflow-y: auto;">
+              @if (logs().length === 0) {
+                <div class="text-muted small italic">Cliquez sur un lien de navigation ci-dessus pour observer le flux...</div>
+              }
+              @for (log of logs(); track $index) {
+                <div class="console-line small py-1 border-bottom border-dark" [ngClass]="log.type">
+                  <span class="text-secondary">[{{ log.time }}]</span> {{ log.text }}
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparative Dynamic Matrix -->
+    <div class="col-lg-5">
+      <div class="ide-card h-100">
+        <div class="ide-header">
+          <span class="fw-bold"><i class="bi bi-table me-2"></i>Matrice Comparative Avantages / Défis</span>
+        </div>
+        <div class="ide-body">
+          <!-- Filters -->
+          <div class="mb-3 d-flex gap-2 flex-wrap">
+            @for (cat of ['Toutes', 'Performance', 'SEO', 'État Client', 'Architecture']; track cat) {
+              <button
+                class="btn btn-xs rounded-pill"
+                [class.btn-danger]="selectedCategory() === cat"
+                [class.btn-outline-secondary]="selectedCategory() !== cat"
+                (click)="selectedCategory.set(cat)">
+                {{ cat }}
+              </button>
+            }
+          </div>
+
+          <!-- Comparison Cards List -->
+          <div class="matrix-list d-flex flex-column gap-3">
+            @for (row of filteredMatrix(); track row.category) {
+              <div class="matrix-item p-3 rounded border">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge bg-secondary">{{ row.category }}</span>
+                  <span class="badge bg-danger">Vainqueur : {{ row.verdict }}</span>
+                </div>
+
+                <div class="row g-2 small">
+                  <div class="col-6">
+                    <div class="p-2 rounded bg-dark-subtle border border-danger-subtle">
+                      <strong class="d-block text-danger mb-1">MPA</strong>
+                      <span class="text-secondary">{{ row.mpa }}</span>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="p-2 rounded bg-dark-subtle border border-primary-subtle">
+                      <strong class="d-block text-primary mb-1">SPA (Angular)</strong>
+                      <span class="text-secondary">{{ row.spa }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="mt-2 mb-0 small text-muted italic">
+                  <i class="bi bi-lightbulb me-1"></i>{{ row.details }}
+                </p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
