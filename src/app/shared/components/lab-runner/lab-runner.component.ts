@@ -144,11 +144,18 @@ import { Exercise, ConsoleLogEntry } from '../../../core/models/app.models';
             <div class="terminal-body">
               @if (lastValidationResult()) {
                 <div class="validation-banner" [class.success]="lastValidationResult()?.success" [class.error]="!lastValidationResult()?.success">
-                  @if (lastValidationResult()?.success) {
-                    <span>✔ Succès ! Tous les critères sont respectés et le code compile sans erreur.</span>
-                  } @else {
-                    <span>❌ Code non validé : certains critères ne sont pas encore satisfaits.</span>
-                  }
+                  <div class="validation-banner-content">
+                    @if (lastValidationResult()?.success) {
+                      <span>✔ Succès ! Tous les critères sont respectés et le code compile sans erreur.</span>
+                      @if (nextExerciseId()) {
+                        <button class="btn-next-exercise" (click)="goToNextExercise()">
+                          Exercice suivant ➔
+                        </button>
+                      }
+                    } @else {
+                      <span>❌ Code non validé : certains critères ne sont pas encore satisfaits.</span>
+                    }
+                  </div>
                 </div>
               }
 
@@ -493,6 +500,14 @@ import { Exercise, ConsoleLogEntry } from '../../../core/models/app.models';
       font-weight: 600;
       margin-bottom: 8px;
 
+      .validation-banner-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
       &.success {
         background: rgba(16, 185, 129, 0.15);
         color: #34d399;
@@ -503,6 +518,22 @@ import { Exercise, ConsoleLogEntry } from '../../../core/models/app.models';
         background: rgba(239, 68, 68, 0.15);
         color: #f87171;
         border: 1px solid rgba(239, 68, 68, 0.35);
+      }
+
+      .btn-next-exercise {
+        padding: 4px 12px;
+        background: #10b981;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &:hover {
+          background: #059669;
+        }
       }
     }
 
@@ -590,6 +621,15 @@ export class LabRunnerComponent {
     return found || list[0] || this.exerciseService.exercises()[0];
   });
 
+  readonly nextExerciseId = computed(() => {
+    const list = this.displayedExercises();
+    const currentIdx = list.findIndex(e => e.id === this.selectedExerciseId());
+    if (currentIdx !== -1 && currentIdx < list.length - 1) {
+      return list[currentIdx + 1].id;
+    }
+    return null;
+  });
+
   constructor() {
     effect(() => {
       const list = this.displayedExercises();
@@ -637,6 +677,13 @@ export class LabRunnerComponent {
       success: res.success,
       error: res.error
     });
+  }
+
+  goToNextExercise(): void {
+    const nextId = this.nextExerciseId();
+    if (nextId) {
+      this.onSelectExercise(nextId);
+    }
   }
 
   clearLogs(): void {

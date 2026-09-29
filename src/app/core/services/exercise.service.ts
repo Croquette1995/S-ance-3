@@ -103,7 +103,7 @@ export class ExerciseService {
     if (!exec.success) {
       this.exercises.update(list => list.map(item => {
         if (item.id === targetId) {
-          return { ...item, criteria: updatedCriteria };
+          return { ...item, criteria: updatedCriteria, isCompleted: false };
         }
         return item;
       }));
@@ -132,7 +132,7 @@ export class ExerciseService {
       case 'ex-1-3': {
         const hasRam = /class\s+MemoireVive\b/.test(code) && /capaciteGo\s*\(\s*\)/.test(code);
         const hasMulti = /constructor\s*\([^)]*Processeur[^)]*MemoireVive/.test(code) || /constructor\s*\([^)]*MemoireVive[^)]*Processeur/.test(code);
-        const hasDiag = exec.logs.some(l => l.text.includes('32') && (l.text.includes('CPU') || l.text.includes('RAM')));
+        const hasDiag = exec.logs.some(l => l.text.includes('32') && (l.text.includes('CPU') || l.text.includes('RAM') || l.text.includes('PC')));
         updatedCriteria[0].passed = hasRam;
         updatedCriteria[1].passed = hasMulti;
         updatedCriteria[2].passed = hasDiag;
@@ -162,7 +162,8 @@ export class ExerciseService {
       case 'ex-2-1': {
         const hasInterface = /interface\s+Arme\b/.test(code) && /attaquer\s*\(\s*\)/.test(code);
         const hasClasses = /class\s+Epee\s+implements\s+Arme\b/.test(code) && /class\s+Arc\s+implements\s+Arme\b/.test(code);
-        const logged = exec.logs.some(l => l.text.includes('épée')) && exec.logs.some(l => l.text.includes('Flèche') || l.text.includes('Arc'));
+        const logged = exec.logs.some(l => l.text.toLowerCase().includes('épée') || l.text.toLowerCase().includes('epee')) &&
+                       exec.logs.some(l => l.text.toLowerCase().includes('flèche') || l.text.toLowerCase().includes('fleche') || l.text.toLowerCase().includes('arc'));
         updatedCriteria[0].passed = hasInterface;
         updatedCriteria[1].passed = hasClasses;
         updatedCriteria[2].passed = logged;
@@ -179,7 +180,7 @@ export class ExerciseService {
       }
       case 'ex-2-3': {
         const hasFrapper = /frapper\s*\(\s*\)/.test(code) && /attaquer\s*\(/.test(code);
-        const logged = exec.logs.some(l => l.text.includes('Conan') && l.text.includes('épée'));
+        const logged = exec.logs.some(l => l.text.includes('Conan') && (l.text.toLowerCase().includes('épée') || l.text.toLowerCase().includes('epee')));
         updatedCriteria[0].passed = hasFrapper;
         updatedCriteria[1].passed = logged;
         allPassed = hasFrapper && logged;
@@ -187,7 +188,8 @@ export class ExerciseService {
       }
       case 'ex-2-4': {
         const hasSwap = /equiperArme\s*\(\s*\w+\s*:\s*Arme\s*\)/.test(code) || /equiperArme\s*\(\s*\w+\s*\)/.test(code);
-        const logged = exec.logs.some(l => l.text.includes('épée')) && exec.logs.some(l => l.text.includes('Flèche'));
+        const logged = exec.logs.some(l => l.text.toLowerCase().includes('épée') || l.text.toLowerCase().includes('epee')) &&
+                       exec.logs.some(l => l.text.toLowerCase().includes('flèche') || l.text.toLowerCase().includes('fleche') || l.text.toLowerCase().includes('arc'));
         updatedCriteria[0].passed = hasSwap;
         updatedCriteria[1].passed = logged;
         allPassed = hasSwap && logged;
